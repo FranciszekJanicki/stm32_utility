@@ -22,18 +22,24 @@ namespace Utility {
 
         template <std::size_t SIZE>
         void transmit_bytes(std::array<std::uint8_t, SIZE> const& bytes) const noexcept;
+        void transmit_bytes(std::uint8_t* const bytes, std::size_t const size) const noexcept;
         void transmit_byte(std::uint8_t const byte) const noexcept;
 
         template <std::size_t SIZE>
         std::array<std::uint8_t, SIZE> receive_bytes() const noexcept;
+        void receive_bytes(std::uint8_t* const bytes, std::size_t const size) const noexcept;
         std::uint8_t receive_byte() const noexcept;
 
         template <std::size_t SIZE>
         std::array<std::uint8_t, SIZE> read_bytes(std::uint8_t const reg_address) const noexcept;
+        void
+        read_bytes(std::uint8_t const reg_address, std::uint8_t* const bytes, std::size_t const size) const noexcept;
         std::uint8_t read_byte(std::uint8_t const reg_address) const noexcept;
 
         template <std::size_t SIZE>
         void write_bytes(std::uint8_t const reg_address, std::array<std::uint8_t, SIZE> const& bytes) const noexcept;
+        void
+        write_bytes(std::uint8_t const reg_address, std::uint8_t* const bytes, std::size_t const size) const noexcept;
         void write_byte(std::uint8_t const reg_address, std::uint8_t const byte) const noexcept;
 
     private:
