@@ -13,6 +13,7 @@ target_sources(utility PRIVATE
     "vector3d.hpp"
     "quaternion3d.hpp"
     "utility.hpp"
+    "pid.hpp"
 )
 
 target_include_directories(utility PUBLIC 
