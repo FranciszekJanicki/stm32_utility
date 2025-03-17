@@ -30,7 +30,7 @@ namespace Utility {
     {
         if (this->initialized_) {
             printf("Raw: %d\n\r", raw);
-            __HAL_TIM_SetCompare(this->timer_, this->channel_mask_, raw);
+            __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
         }
     }
 
@@ -56,12 +56,27 @@ namespace Utility {
 
     void PWMDevice::set_frequency(std::uint32_t const frequency) noexcept
     {
-        this->deinitialize();
-        this->timer_->Init.Period = Utility::freq_hz_to_count(frequency,
-                                                              this->timer_->Init.Prescaler,
-                                                              80000000UL,
-                                                              this->timer_->Init.ClockDivision);
-        this->initialize();
+        if (frequency > 0UL) {
+            auto const clock_hz = 80000000UL;
+            auto const clock_div = this->timer_->Init.ClockDivision;
+            auto counter_period = clock_hz / frequency;
+            auto prescaler = 0UL;
+
+            while (counter_period > 0xFFFF && prescaler < 0xFFFF) {
+                ++prescaler;
+                counter_period = (clock_hz / ((prescaler + 1UL) * (clock_div + 1UL) * frequency)) - 1UL;
+            }
+
+            if (prescaler > 0xFFFF) {
+                prescaler = 0xFFFF;
+            }
+            if (counter_period > 0xFFFF) {
+                counter_period = 0xFFFF;
+            }
+
+            __HAL_TIM_SET_PRESCALER(this->timer_, prescaler);
+            __HAL_TIM_SET_AUTORELOAD(this->timer_, counter_period);
+        }
     }
 
     void PWMDevice::initialize() noexcept
