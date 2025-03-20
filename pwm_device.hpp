@@ -29,7 +29,11 @@ namespace Utility {
 
         ~PWMDevice() noexcept;
 
-        void set_frequency(std::uint32_t const frequency) noexcept;
+        std::uint16_t get_prescaler() const noexcept;
+        std::uint16_t get_counter_period() const noexcept;
+        std::uint16_t get_clock_divider() const noexcept;
+
+        void set_frequency(std::uint16_t const frequency) noexcept;
 
         void set_compare_raw(std::uint16_t const raw) const noexcept;
         void set_compare_voltage(float const voltage) const noexcept;

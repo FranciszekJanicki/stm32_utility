@@ -29,7 +29,6 @@ namespace Utility {
     void PWMDevice::set_compare_raw(std::uint16_t const raw) const noexcept
     {
         if (this->initialized_) {
-            printf("Raw: %d\n\r", raw);
             __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
         }
     }
@@ -49,22 +48,32 @@ namespace Utility {
         this->set_compare_raw(this->min_raw_);
     }
 
-    float PWMDevice::get_ref_voltage() const noexcept
+    std::uint16_t PWMDevice::get_prescaler() const noexcept
     {
-        return this->ref_voltage_;
+        return this->timer_->Init.Prescaler;
     }
 
-    void PWMDevice::set_frequency(std::uint32_t const frequency) noexcept
+    std::uint16_t PWMDevice::get_counter_period() const noexcept
+    {
+        return this->timer_->Init.Period;
+    }
+
+    std::uint16_t PWMDevice::get_clock_divider() const noexcept
+    {
+        return this->timer_->Init.ClockDivision;
+    }
+
+    void PWMDevice::set_frequency(std::uint16_t const frequency) noexcept
     {
         if (frequency > 0UL) {
             auto const clock_hz = 80000000UL;
             auto const clock_div = this->timer_->Init.ClockDivision;
             auto counter_period = clock_hz / frequency;
-            auto prescaler = 0UL;
+            auto prescaler = 0U;
 
             while (counter_period > 0xFFFF && prescaler < 0xFFFF) {
                 ++prescaler;
-                counter_period = (clock_hz / ((prescaler + 1UL) * (clock_div + 1UL) * frequency)) - 1UL;
+                counter_period = (clock_hz / ((prescaler + 1U) * (clock_div + 1U) * frequency)) - 1UL;
             }
 
             if (prescaler > 0xFFFF) {
