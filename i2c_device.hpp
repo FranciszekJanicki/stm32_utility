@@ -17,7 +17,7 @@ namespace Utility {
         I2CDevice& operator=(I2CDevice const& other) = delete;
         I2CDevice& operator=(I2CDevice&& other) noexcept = default;
 
-        ~I2CDevice() noexcept = default;
+        ~I2CDevice() noexcept;
 
         template <std::size_t SIZE>
         void transmit_bytes(std::array<std::uint8_t, SIZE> const& bytes) const noexcept;
@@ -44,10 +44,11 @@ namespace Utility {
         std::uint16_t dev_address() const noexcept;
 
     private:
-        static constexpr std::uint32_t TIMEOUT{100U};
-        static constexpr std::uint32_t SCAN_RETRIES{10U};
+        static std::uint32_t constexpr TIMEOUT{100U};
+        static std::uint32_t constexpr SCAN_RETRIES{10U};
 
         void initialize() noexcept;
+        void deinitialize() noexcept;
 
         bool initialized_{false};
 

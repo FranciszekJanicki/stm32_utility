@@ -40,7 +40,7 @@ namespace Utility {
         void set_compare_max() const noexcept;
         void set_compare_min() const noexcept;
 
-        [[nodiscard]] float get_ref_voltage() const noexcept;
+        float get_ref_voltage() const noexcept;
 
     private:
         void initialize() noexcept;

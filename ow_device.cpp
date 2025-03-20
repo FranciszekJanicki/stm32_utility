@@ -54,6 +54,25 @@ namespace Utility {
         return this->dev_address_;
     }
 
+    std::uint64_t OWDevice::get_counter_microseconds(TIMHandle const timer) noexcept
+    {
+        return 1000ULL * get_counter_miliseconds(timer);
+    }
+
+    std::uint64_t OWDevice::get_counter_miliseconds(TIMHandle const timer) noexcept
+    {
+        return 1000ULL * __HAL_TIM_GetCounter(timer) / HAL_GetTickFreq() / __HAL_TIM_GetClockDivision(timer);
+    }
+
+    void OWDevice::delay_microseconds(TIMHandle const timer, std::uint64_t const delay) noexcept
+    {
+        if (timer != nullptr) {
+            HAL_TIM_Base_Start(timer);
+            while (get_counter_miliseconds(timer) < delay) {
+            }
+        }
+    }
+
     void OWDevice::initialize() noexcept
     {
         if (this->timer_ != nullptr) {

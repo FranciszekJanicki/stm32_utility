@@ -8,6 +8,11 @@ namespace Utility {
         this->initialize();
     }
 
+    I2CDevice::~I2CDevice() noexcept
+    {
+        this->deinitialize();
+    }
+
     void I2CDevice::transmit_bytes(std::uint8_t* const bytes, std::size_t const size) const noexcept
     {
         if (this->initialized_) {
@@ -83,6 +88,13 @@ namespace Utility {
             if (HAL_I2C_IsDeviceReady(this->i2c_bus_, this->dev_address_ << 1, SCAN_RETRIES, TIMEOUT) == HAL_OK) {
                 this->initialized_ = true;
             }
+        }
+    }
+
+    void I2CDevice::deinitialize() noexcept
+    {
+        if (this->i2c_bus_ != nullptr) {
+            this->initialized_ = false;
         }
     }
 

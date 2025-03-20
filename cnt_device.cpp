@@ -15,16 +15,15 @@ namespace Utility {
 
     std::optional<std::uint32_t> CNTDevice::get_count() const noexcept
     {
-        if (!this->initialized_) {
-            return std::optional<std::uint32_t>{std::nullopt};
-        }
-        this->count_ = this->get_current_count() % this->counter_period_;
-        return std::optional<std::uint32_t>{this->count_};
+        return this->initialized_
+                   ? std::optional<std::uint32_t>{std::nullopt}
+                   : std::optional<std::uint32_t>{this->count_ = (this->get_current_count() % this->counter_period_)};
     }
 
     std::optional<std::uint32_t> CNTDevice::get_count_difference() const noexcept
     {
         auto prev_count{this->count_};
+
         return this->get_count().transform([prev_count](std::uint32_t const count) { return count - prev_count; });
     }
 

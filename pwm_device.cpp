@@ -6,10 +6,8 @@ namespace Utility {
                          std::uint16_t const channel_mask,
                          std::uint16_t const counter_period,
                          float const ref_voltage) noexcept :
-        timer_{timer}, channel_mask_{channel_mask}, min_raw_{0U}, max_raw_{counter_period}, ref_voltage_{ref_voltage}
-    {
-        this->initialize();
-    }
+        PWMDevice{timer, channel_mask, 0U, counter_period, ref_voltage}
+    {}
 
     PWMDevice::PWMDevice(TIMHandle const timer,
                          std::uint16_t const channel_mask,

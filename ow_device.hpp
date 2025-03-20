@@ -45,28 +45,14 @@ namespace Utility {
         std::uint64_t dev_address() const noexcept;
 
     private:
-        static std::uint64_t get_counter_microseconds(TIMHandle const timer) noexcept
-        {
-            return 1000ULL * get_counter_miliseconds(timer);
-        }
+        static std::uint64_t get_counter_microseconds(TIMHandle const timer) noexcept;
+        static std::uint64_t get_counter_miliseconds(TIMHandle const timer) noexcept;
 
-        static std::uint64_t get_counter_miliseconds(TIMHandle const timer) noexcept
-        {
-            return 1000ULL * __HAL_TIM_GetCounter(timer) / HAL_GetTickFreq() / __HAL_TIM_GetClockDivision(timer);
-        }
+        static void delay_microseconds(TIMHandle const timer, std::uint64_t const delay) noexcept;
 
-        static void delay_microseconds(TIMHandle const timer, std::uint64_t const delay) noexcept
-        {
-            if (timer != nullptr) {
-                HAL_TIM_Base_Start(timer);
-                while (get_counter_miliseconds(timer) < delay) {
-                }
-            }
-        }
-
-        static constexpr std::uint32_t TIMEOUT{100U};
-        static constexpr std::uint32_t DELAY_80_US{80U};
-        static constexpr std::uint32_t DELAY_320_US{320U};
+        static std::uint32_t constexpr TIMEOUT{100U};
+        static std::uint32_t constexpr DELAY_80_US{80U};
+        static std::uint32_t constexpr DELAY_320_US{320U};
 
         void initialize() noexcept;
         void deinitialize() noexcept;

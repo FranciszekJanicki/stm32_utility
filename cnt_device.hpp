@@ -20,8 +20,8 @@ namespace Utility {
 
         ~CNTDevice() noexcept;
 
-        [[nodiscard]] std::optional<std::uint32_t> get_count() const noexcept;
-        [[nodiscard]] std::optional<std::uint32_t> get_count_difference() const noexcept;
+        std::optional<std::uint32_t> get_count() const noexcept;
+        std::optional<std::uint32_t> get_count_difference() const noexcept;
 
     private:
         std::uint32_t get_current_count() const noexcept;
