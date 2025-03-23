@@ -61,10 +61,9 @@ namespace Utility {
     template <std::size_t SIZE>
     void SPIDevice::transmit_bytes(std::array<std::uint8_t, SIZE> const& bytes) const noexcept
     {
-        std::array<std::uint8_t, SIZE> transmit{bytes};
         if (this->initialized_) {
             gpio_write_pin(this->chip_select_, GPIO_PIN_RESET);
-            HAL_SPI_Transmit(this->spi_bus_, transmit.data(), transmit.size(), TIMEOUT);
+            HAL_SPI_Transmit(this->spi_bus_, bytes.data(), bytes.size(), TIMEOUT);
             gpio_write_pin(this->chip_select_, GPIO_PIN_SET);
         }
     }
@@ -72,39 +71,45 @@ namespace Utility {
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> SPIDevice::receive_bytes() const noexcept
     {
-        std::array<std::uint8_t, SIZE> receive{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
             gpio_write_pin(this->chip_select_, GPIO_PIN_RESET);
-            HAL_SPI_Receive(this->spi_bus_, receive.data(), SIZE, TIMEOUT);
+            HAL_SPI_Receive(this->spi_bus_, bytes.data(), bytes.size(), TIMEOUT);
             gpio_write_pin(this->chip_select_, GPIO_PIN_SET);
         }
-        return receive;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> SPIDevice::read_bytes(std::uint8_t const reg_address) const noexcept
     {
-        std::uint8_t command = reg_address_to_read_command(reg_address);
-        std::array<std::uint8_t, SIZE> read{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
+            std::uint8_t command = reg_address_to_read_command(reg_address);
+
             gpio_write_pin(this->chip_select_, GPIO_PIN_RESET);
-            HAL_SPI_TransmitReceive(this->spi_bus_, &command, read.data(), read.size(), TIMEOUT);
+            HAL_SPI_TransmitReceive(this->spi_bus_, &command, bytes.data(), bytes.size(), TIMEOUT);
             gpio_write_pin(this->chip_select_, GPIO_PIN_SET);
         }
-        return read;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>
     void SPIDevice::write_bytes(std::uint8_t const reg_address,
                                 std::array<std::uint8_t, SIZE> const& bytes) const noexcept
     {
-        std::uint8_t command = reg_address_to_write_command(reg_address);
-        std::array<std::uint8_t, 1UL + SIZE> write{};
-        std::memcpy(write.data(), &command, 1UL);
-        std::memcpy(write.data() + 1UL, bytes.data(), bytes.size());
         if (this->initialized_) {
+            std::uint8_t command = reg_address_to_write_command(reg_address);
+            std::array<std::uint8_t, 1UL + SIZE> _bytes{};
+            std::memcpy(_bytes.data(), &command, 1UL);
+            std::memcpy(_bytes.data() + 1UL, bytes.data(), bytes.size());
+
             gpio_write_pin(this->chip_select_, GPIO_PIN_RESET);
-            HAL_SPI_Transmit(this->spi_bus_, write.data(), write.size(), TIMEOUT);
+            HAL_SPI_Transmit(this->spi_bus_, _bytes.data(), _bytes.size(), TIMEOUT);
             gpio_write_pin(this->chip_select_, GPIO_PIN_SET);
         }
     }

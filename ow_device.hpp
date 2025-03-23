@@ -75,19 +75,23 @@ namespace Utility {
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> OWDevice::receive_bytes() const noexcept
     {
-        std::array<std::uint8_t, SIZE> receive{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
         }
-        return receive;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> OWDevice::read_bytes(std::uint8_t const reg_address) const noexcept
     {
-        std::array<std::uint8_t, SIZE> read{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
         }
-        return read;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>

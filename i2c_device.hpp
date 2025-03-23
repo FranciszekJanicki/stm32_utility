@@ -44,8 +44,8 @@ namespace Utility {
         std::uint16_t dev_address() const noexcept;
 
     private:
-        static std::uint32_t constexpr TIMEOUT{100U};
-        static std::uint32_t constexpr SCAN_RETRIES{10U};
+        static constexpr std::uint32_t TIMEOUT{100U};
+        static constexpr std::uint32_t SCAN_RETRIES{10U};
 
         void initialize() noexcept;
         void deinitialize() noexcept;
@@ -59,36 +59,43 @@ namespace Utility {
     template <std::size_t SIZE>
     void I2CDevice::transmit_bytes(std::array<std::uint8_t, SIZE> const& bytes) const noexcept
     {
-        std::array<std::uint8_t, SIZE> transmit{bytes};
         if (this->initialized_) {
-            HAL_I2C_Master_Transmit(this->i2c_bus_, this->dev_address_ << 1, transmit.data(), transmit.size(), TIMEOUT);
+            HAL_I2C_Master_Transmit(this->i2c_bus_,
+                                    this->dev_address_ << 1,
+                                    (std::uint8_t*)bytes.data(),
+                                    bytes.size(),
+                                    TIMEOUT);
         }
     }
 
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> I2CDevice::receive_bytes() const noexcept
     {
-        std::array<std::uint8_t, SIZE> receive{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
-            HAL_I2C_Master_Receive(this->i2c_bus_, this->dev_address_ << 1, receive.data(), receive.size(), TIMEOUT);
+            HAL_I2C_Master_Receive(this->i2c_bus_, this->dev_address_ << 1, bytes.data(), bytes.size(), TIMEOUT);
         }
-        return receive;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>
     std::array<std::uint8_t, SIZE> I2CDevice::read_bytes(std::uint8_t const reg_address) const noexcept
     {
-        std::array<std::uint8_t, SIZE> read{};
+        std::array<std::uint8_t, SIZE> bytes{};
+
         if (this->initialized_) {
             HAL_I2C_Mem_Read(this->i2c_bus_,
                              this->dev_address_ << 1,
                              reg_address,
                              sizeof(reg_address),
-                             read.data(),
-                             read.size(),
+                             bytes.data(),
+                             bytes.size(),
                              TIMEOUT);
         }
-        return read;
+
+        return bytes;
     }
 
     template <std::size_t SIZE>
@@ -96,13 +103,12 @@ namespace Utility {
                                 std::array<std::uint8_t, SIZE> const& bytes) const noexcept
     {
         if (this->initialized_) {
-            std::array<std::uint8_t, SIZE> write{bytes};
             HAL_I2C_Mem_Write(this->i2c_bus_,
                               this->dev_address_ << 1,
                               reg_address,
                               sizeof(reg_address),
-                              write.data(),
-                              write.size(),
+                              (std::uint8_t*)bytes.data(),
+                              bytes.size(),
                               TIMEOUT);
         }
     }

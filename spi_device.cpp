@@ -36,8 +36,8 @@ namespace Utility {
                                std::uint8_t* const bytes,
                                std::size_t const size) const noexcept
     {
-        auto const command = reg_address_to_read_command(reg_address);
         if (this->initialized_) {
+            auto const command = reg_address_to_read_command(reg_address);
             HAL_SPI_TransmitReceive(this->spi_bus_, &command, bytes, size, TIMEOUT);
         }
     }
@@ -51,10 +51,9 @@ namespace Utility {
                                 std::uint8_t* const bytes,
                                 std::size_t const size) const noexcept
     {
-        auto const command = reg_address_to_write_command(reg_address);
         if (this->initialized_) {
-            auto write = static_cast<std::uint8_t*>(std::malloc(size + 1UL));
-            if (write) {
+            if (auto write = static_cast<std::uint8_t*>(std::malloc(size + 1UL)); write) {
+                auto const command = reg_address_to_write_command(reg_address);
                 std::memcpy(write, &command, 1UL);
                 std::memcpy(write + 1UL, bytes, size);
                 HAL_SPI_Transmit(this->spi_bus_, write, size + 1UL, TIMEOUT);
