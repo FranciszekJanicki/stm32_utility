@@ -46,26 +46,11 @@ namespace Utility {
         this->set_compare_raw(this->min_raw_);
     }
 
-    std::uint16_t PWMDevice::get_prescaler() const noexcept
-    {
-        return this->timer_->Init.Prescaler;
-    }
-
-    std::uint16_t PWMDevice::get_counter_period() const noexcept
-    {
-        return this->timer_->Init.Period;
-    }
-
-    std::uint16_t PWMDevice::get_clock_divider() const noexcept
-    {
-        return this->timer_->Init.ClockDivision;
-    }
-
     void PWMDevice::set_frequency(std::uint16_t const frequency) noexcept
     {
         if (frequency > 0UL) {
-            auto const clock_hz = 80000000UL;
-            auto const clock_div = this->timer_->Init.ClockDivision;
+            auto const clock_hz = 80000000U;
+            auto const clock_div = __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
             auto counter_period = clock_hz / frequency;
             auto prescaler = 0U;
 
@@ -74,44 +59,48 @@ namespace Utility {
                 counter_period = (clock_hz / ((prescaler + 1U) * (clock_div + 1U) * frequency)) - 1UL;
             }
 
-            if (prescaler > 0xFFFF) {
-                prescaler = 0xFFFF;
-            }
-            if (counter_period > 0xFFFF) {
-                counter_period = 0xFFFF;
-            }
-
-            __HAL_TIM_SET_PRESCALER(this->timer_, prescaler);
-            __HAL_TIM_SET_AUTORELOAD(this->timer_, counter_period);
+            __HAL_TIM_SET_PRESCALER(this->timer_, std::clamp(prescaler, 0U, 0xFFFFU));
+            __HAL_TIM_SET_AUTORELOAD(this->timer_, std::clamp(counter_period, 0U, 0xFFFFU));
         }
+    }
+
+    std::uint16_t PWMDevice::get_counter() const noexcept
+    {
+        return __HAL_TIM_GET_COUNTER(this->timer_);
+    }
+
+    std::uint16_t PWMDevice::get_counter_period() const noexcept
+    {
+        return __HAL_TIM_GET_AUTORELOAD(this->timer_);
+    }
+
+    std::uint16_t PWMDevice::get_prescaler() const noexcept
+    {
+        return this->timer_->Init.Prescaler;
+    }
+
+    std::uint16_t PWMDevice::get_clock_divider() const noexcept
+    {
+        return __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
     }
 
     void PWMDevice::initialize() noexcept
     {
         if (this->timer_ != nullptr) {
-            if (HAL_TIM_PWM_Start(this->timer_, this->channel_mask_) == HAL_OK) {
-                this->initialized_ = true;
-            }
+            this->initialized_ = true;
         }
     }
 
     void PWMDevice::deinitialize() noexcept
     {
         if (this->timer_ != nullptr) {
-            if (HAL_TIM_PWM_Stop(this->timer_, this->channel_mask_) == HAL_OK) {
-                this->initialized_ = false;
-            }
+            this->initialized_ = false;
         }
     }
 
     std::uint16_t PWMDevice::voltage_to_raw(float const voltage) const noexcept
     {
         return Utility::rescale(voltage, 0.0F, this->ref_voltage_, this->min_raw_, this->max_raw_);
-    }
-
-    float PWMDevice::raw_to_voltage(std::uint16_t const raw) const noexcept
-    {
-        return Utility::rescale(raw, this->min_raw_, this->max_raw_, 0.0F, this->ref_voltage_);
     }
 
 }; // namespace Utility

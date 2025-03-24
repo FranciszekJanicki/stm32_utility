@@ -29,25 +29,23 @@ namespace Utility {
 
         ~PWMDevice() noexcept;
 
-        std::uint16_t get_prescaler() const noexcept;
-        std::uint16_t get_counter_period() const noexcept;
-        std::uint16_t get_clock_divider() const noexcept;
-
         void set_frequency(std::uint16_t const frequency) noexcept;
+
+        std::uint16_t get_counter() const noexcept;
+        std::uint16_t get_counter_period() const noexcept;
+        std::uint16_t get_prescaler() const noexcept;
+        std::uint16_t get_clock_divider() const noexcept;
 
         void set_compare_raw(std::uint16_t const raw) const noexcept;
         void set_compare_voltage(float const voltage) const noexcept;
         void set_compare_max() const noexcept;
         void set_compare_min() const noexcept;
 
-        float get_ref_voltage() const noexcept;
-
     private:
         void initialize() noexcept;
         void deinitialize() noexcept;
 
         std::uint16_t voltage_to_raw(float const voltage) const noexcept;
-        float raw_to_voltage(std::uint16_t const raw) const noexcept;
 
         bool initialized_{false};
 

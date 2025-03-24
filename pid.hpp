@@ -11,17 +11,24 @@ namespace Utility {
     struct PID {
         T operator()(T const error, T const sampling_time) noexcept
         {
-            return this->get_control(error, sampling_time);
+            return this->get_sat_control(error, sampling_time);
+        }
+
+        T get_sat_control(T const error, T const sampling_time) noexcept
+        {
+            auto const control = this->get_control(error, sampling_time);
+            auto const sat_control = std::clamp(control, -this->saturation, this->saturation);
+
+            this->prev_sat_error = std::exchange(this->sat_error, control - sat_control);
+            this->prev_error = error;
+
+            return sat_control;
         }
 
         T get_control(T const error, T const sampling_time) noexcept
         {
-            T control{this->get_proportion(error) + this->get_integral(error, sampling_time) +
-                      this->get_derivative(error, sampling_time)};
-            T saturated_control{std::clamp(control, -this->saturation, this->saturation)};
-            this->prev_sat_error = std::exchange(this->sat_error, control - saturated_control);
-            this->prev_error = error;
-            return saturated_control;
+            return this->get_proportion(error) + this->get_integral(error, sampling_time) +
+                   this->get_derivative(error, sampling_time);
         }
 
         T get_proportion(T const error) noexcept
@@ -36,6 +43,7 @@ namespace Utility {
                                                             sampling_time,
                                                             this->error_derivative,
                                                             this->time_constant);
+
             return this->derivative_gain * this->error_derivative;
         }
 
@@ -43,6 +51,7 @@ namespace Utility {
         {
             this->error_integral += Utility::integrate(error, this->prev_error, sampling_time);
             this->sat_error_integral += Utility::integrate(this->sat_error, this->prev_sat_error, sampling_time);
+
             return this->integral_gain * this->error_integral - this->control_gain * this->sat_error_integral;
         }
 
