@@ -38,8 +38,22 @@ namespace Utility {
 
         void set_compare_raw(std::uint16_t const raw) const noexcept;
         void set_compare_voltage(float const voltage) const noexcept;
-        void set_compare_max() const noexcept;
-        void set_compare_min() const noexcept;
+
+        void set_compare_raw_it(std::uint16_t const raw) const noexcept;
+        void set_compare_voltage_it(float const voltage) const noexcept;
+
+        void set_compare_raw_dma(std::uint16_t const raw) const noexcept;
+
+        void set_compare_voltage_dma(float const voltage) const noexcept;
+
+        void start() const noexcept;
+        void stop() const noexcept;
+
+        void start_it() const noexcept;
+        void stop_it() const noexcept;
+
+        void start_dma() const noexcept;
+        void stop_dma() const noexcept;
 
     private:
         void initialize() noexcept;
@@ -51,6 +65,8 @@ namespace Utility {
 
         TIMHandle timer_{nullptr};
         std::uint16_t channel_mask_{};
+
+        std::uint32_t mutable dma_buf_{};
 
         std::uint16_t min_raw_{};
         std::uint16_t max_raw_{};

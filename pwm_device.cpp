@@ -28,6 +28,7 @@ namespace Utility {
     {
         if (this->initialized_) {
             __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
+            this->start();
         }
     }
 
@@ -36,17 +37,34 @@ namespace Utility {
         this->set_compare_raw(this->voltage_to_raw(voltage));
     }
 
-    void PWMDevice::set_compare_max() const noexcept
+    void PWMDevice::set_compare_raw_it(std::uint16_t const raw) const noexcept
     {
-        this->set_compare_raw(this->max_raw_);
+        if (this->initialized_) {
+            __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
+            this->start_it();
+        }
     }
 
-    void PWMDevice::set_compare_min() const noexcept
+    void PWMDevice::set_compare_voltage_it(float const voltage) const noexcept
     {
-        this->set_compare_raw(this->min_raw_);
+        this->set_compare_raw_it(this->voltage_to_raw(voltage));
+    }
+
+    void PWMDevice::set_compare_raw_dma(std::uint16_t const raw) const noexcept
+    {
+        if (this->initialized_) {
+            this->dma_buf_ = raw;
+            this->start_dma();
+        }
+    }
+
+    void PWMDevice::set_compare_voltage_dma(float const voltage) const noexcept
+    {
+        this->set_compare_raw_dma(this->voltage_to_raw(voltage));
     }
 
     void PWMDevice::set_frequency(std::uint16_t const frequency) noexcept
+
     {
         if (frequency > 0UL) {
             auto const clock_hz = 80000000U;
@@ -82,6 +100,48 @@ namespace Utility {
     std::uint16_t PWMDevice::get_clock_divider() const noexcept
     {
         return __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
+    }
+
+    void PWMDevice::start() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Start(this->timer_, this->channel_mask_);
+        }
+    }
+
+    void PWMDevice::stop() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Stop(this->timer_, this->channel_mask_);
+        }
+    }
+
+    void PWMDevice::start_it() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Start_IT(this->timer_, this->channel_mask_);
+        }
+    }
+
+    void PWMDevice::stop_it() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Stop_IT(this->timer_, this->channel_mask_);
+        }
+    }
+
+    void PWMDevice::start_dma() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Start_DMA(this->timer_, this->channel_mask_, &this->dma_buf_, sizeof(this->dma_buf_));
+        }
+    }
+
+    void PWMDevice::stop_dma() const noexcept
+    {
+        if (this->initialized_) {
+            HAL_TIM_PWM_Stop_DMA(this->timer_, this->channel_mask_);
+        }
     }
 
     void PWMDevice::initialize() noexcept
