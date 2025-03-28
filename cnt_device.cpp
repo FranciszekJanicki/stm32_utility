@@ -1,6 +1,6 @@
 #include "cnt_device.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     CNTDevice::CNTDevice(TIMHandle const timer, std::uint32_t const counter_period) noexcept :
         timer_{timer}, counter_period_{counter_period}
@@ -50,4 +50,4 @@ namespace Utility {
         return static_cast<std::uint32_t>(__HAL_TIM_GetCounter(this->timer_));
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility

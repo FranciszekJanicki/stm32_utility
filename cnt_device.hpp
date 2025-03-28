@@ -2,10 +2,9 @@
 #define CNT_DEVICE_HPP
 
 #include "common.hpp"
-#include "utility.hpp"
 #include <optional>
 
-namespace Utility {
+namespace STM32_Utility {
 
     struct CNTDevice {
     public:
@@ -37,6 +36,6 @@ namespace Utility {
         std::uint32_t mutable count_{};
     };
 
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // CNT_DEVICE_HPP

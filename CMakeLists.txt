@@ -1,27 +1,24 @@
-add_library(utility STATIC)
+add_library(stm32_utility STATIC)
 
-target_sources(utility PRIVATE 
-    "gpio.hpp"
-    "i2c_device.hpp" 
+target_sources(stm32_utility PRIVATE 
+    "gpio.cpp"
     "i2c_device.cpp"
-    "spi_device.hpp" 
     "spi_device.cpp"
-    "ow_device.hpp" 
     "ow_device.cpp"
     "pwm_device.cpp"
     "cnt_device.cpp"
 )
 
-target_include_directories(utility PUBLIC 
-    "."
-    ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(stm32_utility PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/stm32_utility
+    ${CMAKE_CURRENT_SOURCE_DIR}/stm32cubemx
 )
 
-target_link_libraries(utility PUBLIC
+target_link_libraries(stm32_utility PUBLIC
     stm32cubemx
 )
 
-target_compile_options(utility PUBLIC
+target_compile_options(stm32_utility PUBLIC
     -std=c++23
     -Wall
     -Wextra

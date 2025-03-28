@@ -2,9 +2,8 @@
 #define GPIO_HPP
 
 #include "common.hpp"
-#include "utility.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     enum struct GPIO : std::uint8_t {
         PA0,
@@ -144,46 +143,16 @@ namespace Utility {
         PH15,
     };
 
-    namespace {
+    GPIO_PinState gpio_read_pin(GPIO const pin) noexcept;
 
-        [[nodiscard]] GPIO_TypeDef* pin_to_port(GPIO const pin) noexcept
-        {
-            static auto constexpr GPIO_PORTS = std::array{GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH};
-            return GPIO_PORTS[std::to_underlying(pin) / 16U];
-        }
+    void gpio_write_pin(GPIO const pin, GPIO_PinState const gpio_state) noexcept;
 
-        [[nodiscard]] inline std::uint16_t pin_to_mask(GPIO const pin) noexcept
-        {
-            return 1U << (std::to_underlying(pin) % 16U);
-        }
+    void gpio_toggle_pin(GPIO const pin) noexcept;
 
-    }; // namespace
+    void gpio_set_pin(GPIO const pin) noexcept;
 
-    [[nodiscard]] inline GPIO_PinState gpio_read_pin(GPIO const pin) noexcept
-    {
-        return HAL_GPIO_ReadPin(pin_to_port(pin), pin_to_mask(pin));
-    }
+    void gpio_reset_pin(GPIO const pin) noexcept;
 
-    inline void gpio_write_pin(GPIO const pin, GPIO_PinState const gpio_state) noexcept
-    {
-        HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), gpio_state);
-    }
-
-    inline void gpio_toggle_pin(GPIO const pin) noexcept
-    {
-        HAL_GPIO_TogglePin(pin_to_port(pin), pin_to_mask(pin));
-    }
-
-    inline void gpio_set_pin(GPIO const pin) noexcept
-    {
-        HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), GPIO_PIN_SET);
-    }
-
-    inline void gpio_reset_pin(GPIO const pin) noexcept
-    {
-        HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), GPIO_PIN_RESET);
-    }
-
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // GPIO_HPP

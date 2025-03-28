@@ -1,6 +1,6 @@
 #include "i2c_device.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     I2CDevice::I2CDevice(I2CHandle const i2c_bus, std::uint16_t const dev_address) noexcept :
         i2c_bus_{i2c_bus}, dev_address_{dev_address}
@@ -98,4 +98,4 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility

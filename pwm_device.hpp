@@ -2,9 +2,8 @@
 #define PWM_DEVICE_HPP
 
 #include "common.hpp"
-#include "utility.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     struct PWMDevice {
     public:
@@ -73,6 +72,6 @@ namespace Utility {
         float ref_voltage_{};
     };
 
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // PWM_DEVICE_HPP

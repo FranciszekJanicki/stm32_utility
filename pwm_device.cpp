@@ -1,13 +1,15 @@
 #include "pwm_device.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     PWMDevice::PWMDevice(TIMHandle const timer,
                          std::uint16_t const channel_mask,
                          std::uint16_t const counter_period,
                          float const ref_voltage) noexcept :
         PWMDevice{timer, channel_mask, 0U, counter_period, ref_voltage}
-    {}
+    {
+        this->initialize();
+    }
 
     PWMDevice::PWMDevice(TIMHandle const timer,
                          std::uint16_t const channel_mask,
@@ -164,4 +166,4 @@ namespace Utility {
                this->min_raw_;
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility

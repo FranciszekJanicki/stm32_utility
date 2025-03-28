@@ -1,6 +1,6 @@
 #include "ow_device.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     OWDevice::OWDevice(TIMHandle const timer, GPIO const dev_pin, std::uint64_t const dev_address) noexcept :
         timer_{timer}, dev_pin_{dev_pin}, dev_address_{dev_address}
@@ -87,4 +87,4 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility

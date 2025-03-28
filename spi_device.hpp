@@ -3,9 +3,8 @@
 
 #include "common.hpp"
 #include "gpio.hpp"
-#include "utility.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     struct SPIDevice {
     public:
@@ -114,6 +113,6 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // SPI_DEVICE_HPP

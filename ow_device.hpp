@@ -3,9 +3,8 @@
 
 #include "common.hpp"
 #include "gpio.hpp"
-#include "utility.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     struct OWDevice {
     public:
@@ -102,6 +101,6 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // OW_DEVICE_HPP

@@ -1,6 +1,6 @@
 #include "spi_device.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     SPIDevice::SPIDevice(SPIHandle const spi_bus, GPIO const chip_select) noexcept :
         chip_select_{chip_select}, spi_bus_{spi_bus}
@@ -93,4 +93,4 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility

@@ -2,9 +2,8 @@
 #define I2C_DEVICE_HPP
 
 #include "common.hpp"
-#include "utility.hpp"
 
-namespace Utility {
+namespace STM32_Utility {
 
     struct I2CDevice {
     public:
@@ -113,6 +112,6 @@ namespace Utility {
         }
     }
 
-}; // namespace Utility
+}; // namespace STM32_Utility
 
 #endif // I2C_DEVICE_HPP
