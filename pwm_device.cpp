@@ -160,7 +160,8 @@ namespace Utility {
 
     std::uint16_t PWMDevice::voltage_to_raw(float const voltage) const noexcept
     {
-        return Utility::rescale(voltage, 0.0F, this->ref_voltage_, this->min_raw_, this->max_raw_);
+        return std::clamp(voltage, 0.0F, this->ref_voltage_) * (this->max_raw_ - this->min_raw_) / this->ref_voltage_ +
+               this->min_raw_;
     }
 
 }; // namespace Utility

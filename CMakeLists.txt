@@ -10,10 +10,6 @@ target_sources(utility PRIVATE
     "ow_device.cpp"
     "pwm_device.cpp"
     "cnt_device.cpp"
-    "vector3d.hpp"
-    "quaternion3d.hpp"
-    "utility.hpp"
-    "pid.hpp"
 )
 
 target_include_directories(utility PUBLIC 
