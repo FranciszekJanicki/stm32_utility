@@ -49,9 +49,9 @@ namespace STM32_Utility {
 
         static void delay_microseconds(TIMHandle const timer, std::uint64_t const delay) noexcept;
 
-        static std::uint32_t constexpr TIMEOUT{100U};
-        static std::uint32_t constexpr DELAY_80_US{80U};
-        static std::uint32_t constexpr DELAY_320_US{320U};
+        static constexpr std::uint32_t TIMEOUT{100U};
+        static constexpr std::uint32_t DELAY_80_US{80U};
+        static constexpr std::uint32_t DELAY_320_US{320U};
 
         void initialize() noexcept;
         void deinitialize() noexcept;

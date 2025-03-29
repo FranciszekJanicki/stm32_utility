@@ -5,7 +5,7 @@ namespace STM32_Utility {
     PWMDevice::PWMDevice(TIMHandle const timer,
                          std::uint16_t const channel_mask,
                          std::uint16_t const counter_period,
-                         float const ref_voltage) noexcept :
+                         std::float32_t const ref_voltage) noexcept :
         PWMDevice{timer, channel_mask, 0U, counter_period, ref_voltage}
     {
         this->initialize();
@@ -15,7 +15,7 @@ namespace STM32_Utility {
                          std::uint16_t const channel_mask,
                          std::uint16_t const min_raw,
                          std::uint16_t const max_raw,
-                         float const ref_voltage) noexcept :
+                         std::float32_t const ref_voltage) noexcept :
         timer_{timer}, channel_mask_{channel_mask}, min_raw_{min_raw}, max_raw_{max_raw}, ref_voltage_{ref_voltage}
     {
         this->initialize();
@@ -34,7 +34,7 @@ namespace STM32_Utility {
         }
     }
 
-    void PWMDevice::set_compare_voltage(float const voltage) const noexcept
+    void PWMDevice::set_compare_voltage(std::float32_t const voltage) const noexcept
     {
         this->set_compare_raw(this->voltage_to_raw(voltage));
     }
@@ -47,7 +47,7 @@ namespace STM32_Utility {
         }
     }
 
-    void PWMDevice::set_compare_voltage_it(float const voltage) const noexcept
+    void PWMDevice::set_compare_voltage_it(std::float32_t const voltage) const noexcept
     {
         this->set_compare_raw_it(this->voltage_to_raw(voltage));
     }
@@ -60,7 +60,7 @@ namespace STM32_Utility {
         }
     }
 
-    void PWMDevice::set_compare_voltage_dma(float const voltage) const noexcept
+    void PWMDevice::set_compare_voltage_dma(std::float32_t const voltage) const noexcept
     {
         this->set_compare_raw_dma(this->voltage_to_raw(voltage));
     }
@@ -160,9 +160,10 @@ namespace STM32_Utility {
         }
     }
 
-    std::uint16_t PWMDevice::voltage_to_raw(float const voltage) const noexcept
+    std::uint16_t PWMDevice::voltage_to_raw(std::float32_t const voltage) const noexcept
     {
-        return std::clamp(voltage, 0.0F, this->ref_voltage_) * (this->max_raw_ - this->min_raw_) / this->ref_voltage_ +
+        return std::clamp(voltage, 0.0F32, this->ref_voltage_) * (this->max_raw_ - this->min_raw_) /
+                   this->ref_voltage_ +
                this->min_raw_;
     }
 

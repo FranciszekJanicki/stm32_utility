@@ -6,7 +6,7 @@ namespace STM32_Utility {
 
         GPIO_TypeDef* pin_to_port(GPIO const pin) noexcept
         {
-            static auto constexpr GPIO_PORTS = std::array{GPIOA, GPIOB, GPIOC};
+            static constexpr auto GPIO_PORTS = std::array{GPIOA, GPIOB, GPIOC};
             return GPIO_PORTS[std::to_underlying(pin) / 16U];
         }
 

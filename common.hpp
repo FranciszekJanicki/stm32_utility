@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <stdfloat>
 #include <utility>
 
 namespace STM32_Utility {
