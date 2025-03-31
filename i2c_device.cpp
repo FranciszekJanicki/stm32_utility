@@ -1,4 +1,5 @@
 #include "i2c_device.hpp"
+#include <cstdio>
 
 namespace STM32_Utility {
 
@@ -80,6 +81,17 @@ namespace STM32_Utility {
     std::uint16_t I2CDevice::dev_address() const noexcept
     {
         return this->dev_address_;
+    }
+
+    void I2CDevice::bus_scan() const noexcept
+    {
+        if (this->i2c_bus_ != nullptr) {
+            for (std::uint8_t i = 0U; i < (1U << 7U); ++i) {
+                if (HAL_I2C_IsDeviceReady(this->i2c_bus_, i << 1U, SCAN_RETRIES, TIMEOUT) == HAL_OK) {
+                    std::printf("address: %u\n\r", i);
+                }
+            }
+        }
     }
 
     void I2CDevice::initialize() noexcept

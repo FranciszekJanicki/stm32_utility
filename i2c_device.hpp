@@ -42,6 +42,8 @@ namespace STM32_Utility {
 
         std::uint16_t dev_address() const noexcept;
 
+        void bus_scan() const noexcept;
+
     private:
         static constexpr std::uint32_t TIMEOUT{100U};
         static constexpr std::uint32_t SCAN_RETRIES{10U};

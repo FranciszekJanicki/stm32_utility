@@ -10,7 +10,6 @@ target_sources(stm32_utility PRIVATE
 )
 
 target_include_directories(stm32_utility PUBLIC 
-    ${CMAKE_SOURCE_DIR}/cmake/stm32cubemx
     ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
     ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F4xx_HAL_Driver/Inc

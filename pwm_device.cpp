@@ -1,4 +1,5 @@
 #include "pwm_device.hpp"
+#include <cstdio>
 
 namespace STM32_Utility {
 
@@ -29,6 +30,9 @@ namespace STM32_Utility {
     void PWMDevice::set_compare_raw(std::uint16_t const raw) const noexcept
     {
         if (this->initialized_) {
+            std::printf("DUTY: %d\n\r",
+                        100.0F * static_cast<float>(raw) / static_cast<float>(this->get_counter_period()));
+
             __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
             this->start();
         }
@@ -42,6 +46,9 @@ namespace STM32_Utility {
     void PWMDevice::set_compare_raw_it(std::uint16_t const raw) const noexcept
     {
         if (this->initialized_) {
+            std::printf("DUTY: %d\n\r",
+                        100.0F * static_cast<float>(raw) / static_cast<float>(this->get_counter_period()));
+
             __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
             this->start_it();
         }
@@ -55,6 +62,9 @@ namespace STM32_Utility {
     void PWMDevice::set_compare_raw_dma(std::uint16_t const raw) const noexcept
     {
         if (this->initialized_) {
+            std::printf("DUTY: %d\n\r",
+                        100.0F * static_cast<float>(raw) / static_cast<float>(this->get_counter_period()));
+
             this->dma_buf_ = raw;
             this->start_dma();
         }
@@ -66,10 +76,9 @@ namespace STM32_Utility {
     }
 
     void PWMDevice::set_frequency(std::uint16_t const frequency) noexcept
-
     {
         if (frequency > 0UL) {
-            auto const clock_hz = 80000000U;
+            auto const clock_hz = 84000000U;
             auto const clock_div = __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
             auto counter_period = clock_hz / frequency;
             auto prescaler = 0U;
@@ -78,6 +87,8 @@ namespace STM32_Utility {
                 ++prescaler;
                 counter_period = (clock_hz / ((prescaler + 1U) * (clock_div + 1U) * frequency)) - 1UL;
             }
+
+            std::printf("FREQ: %u, PSC: %u, CP: %u\n\r", frequency, prescaler, counter_period);
 
             __HAL_TIM_SET_PRESCALER(this->timer_, std::clamp(prescaler, 0U, 0xFFFFU));
             __HAL_TIM_SET_AUTORELOAD(this->timer_, std::clamp(counter_period, 0U, 0xFFFFU));
