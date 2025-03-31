@@ -16,7 +16,6 @@ target_include_directories(stm32_utility PUBLIC
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F4xx_HAL_Driver/Inc
 )
 
-
 target_link_libraries(stm32_utility PUBLIC
     stm32cubemx
 )
