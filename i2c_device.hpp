@@ -16,7 +16,7 @@ namespace STM32_Utility {
         I2CDevice& operator=(I2CDevice const& other) = delete;
         I2CDevice& operator=(I2CDevice&& other) noexcept = default;
 
-        ~I2CDevice() noexcept;
+        ~I2CDevice() noexcept = default;
 
         template <std::size_t SIZE>
         void transmit_bytes(std::array<std::uint8_t, SIZE> const& data) const noexcept;
@@ -47,7 +47,6 @@ namespace STM32_Utility {
         static constexpr std::uint32_t SCAN_RETRIES{10U};
 
         void initialize() noexcept;
-        void deinitialize() noexcept;
 
         I2CHandle i2c_bus_{nullptr};
         std::uint16_t dev_address_{};
