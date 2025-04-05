@@ -5,33 +5,31 @@
 
 namespace STM32_Utility {
 
-struct CNTDevice {
-public:
-  CNTDevice() noexcept = default;
-  CNTDevice(TIMHandle const timer, std::uint32_t const counter_period) noexcept;
+    struct CNTDevice {
+    public:
+        CNTDevice() noexcept = default;
+        CNTDevice(TIMHandle const timer) noexcept;
 
-  CNTDevice(CNTDevice const &other) = delete;
-  CNTDevice(CNTDevice &&other) noexcept = default;
+        CNTDevice(CNTDevice const& other) = delete;
+        CNTDevice(CNTDevice&& other) noexcept = default;
 
-  CNTDevice &operator=(CNTDevice const &other) = delete;
-  CNTDevice &operator=(CNTDevice &&other) noexcept = default;
+        CNTDevice& operator=(CNTDevice const& other) = delete;
+        CNTDevice& operator=(CNTDevice&& other) noexcept = default;
 
-  ~CNTDevice() noexcept;
+        ~CNTDevice() noexcept;
 
-  std::uint32_t get_count() const noexcept;
-  std::uint32_t get_count_difference() const noexcept;
+        std::uint32_t get_count() const noexcept;
+        std::uint32_t get_count_difference() const noexcept;
 
-private:
-  std::uint32_t get_current_count() const noexcept;
+    private:
+        std::uint32_t get_current_count() const noexcept;
 
-  void initialize() noexcept;
-  void deinitialize() noexcept;
+        void initialize() noexcept;
+        void deinitialize() noexcept;
 
-  TIMHandle timer_{nullptr};
-  std::uint32_t counter_period_{};
-
-  std::uint32_t mutable count_{};
-};
+        TIMHandle timer_{nullptr};
+        std::uint32_t mutable count_{};
+    };
 
 }; // namespace STM32_Utility
 

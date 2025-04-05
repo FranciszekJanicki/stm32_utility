@@ -8,6 +8,11 @@ namespace STM32_Utility {
         this->initialize();
     }
 
+    SPIDevice::~SPIDevice() noexcept
+    {
+        this->deinitialize();
+    }
+
     void SPIDevice::transmit_bytes(std::uint8_t* const data, std::size_t const size) const noexcept
     {
         HAL_SPI_Transmit(this->spi_bus_, data, size, TIMEOUT);

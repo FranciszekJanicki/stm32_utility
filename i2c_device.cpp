@@ -71,7 +71,7 @@ namespace STM32_Utility {
     {
         if (this->i2c_bus_ != nullptr) {
             if (HAL_I2C_IsDeviceReady(this->i2c_bus_, this->dev_address_ << 1, SCAN_RETRIES, TIMEOUT) != HAL_OK) {
-                std::puts("ERROR\n\r");
+                std::puts("I2C ERROR\n\r");
             }
         }
     }

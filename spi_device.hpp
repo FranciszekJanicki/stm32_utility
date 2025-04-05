@@ -17,7 +17,7 @@ namespace STM32_Utility {
         SPIDevice& operator=(SPIDevice const& other) = delete;
         SPIDevice& operator=(SPIDevice&& other) noexcept = default;
 
-        ~SPIDevice() noexcept = default;
+        ~SPIDevice() noexcept;
 
         template <std::size_t SIZE>
         void transmit_bytes(std::array<std::uint8_t, SIZE> const& data) const noexcept;

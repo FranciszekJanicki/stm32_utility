@@ -5,7 +5,8 @@
 
 namespace STM32_Utility {
 
-    enum struct GPIO : std::uint8_t {
+    enum struct GPIO : std::int16_t {
+        NC = -1,
         PA0,
         PA1,
         PA2,

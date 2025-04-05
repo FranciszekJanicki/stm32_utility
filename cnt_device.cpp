@@ -3,8 +3,7 @@
 
 namespace STM32_Utility {
 
-    CNTDevice::CNTDevice(TIMHandle const timer, std::uint32_t const counter_period) noexcept :
-        timer_{timer}, counter_period_{counter_period}
+    CNTDevice::CNTDevice(TIMHandle const timer) noexcept : timer_{timer}
     {
         this->initialize();
     }
@@ -16,7 +15,7 @@ namespace STM32_Utility {
 
     std::uint32_t CNTDevice::get_count() const noexcept
     {
-        return this->count_ = (this->get_current_count() % this->counter_period_);
+        return this->count_ = (this->get_current_count() % __HAL_TIM_GET_AUTORELOAD(this->timer_));
     }
 
     std::uint32_t CNTDevice::get_count_difference() const noexcept
@@ -30,7 +29,7 @@ namespace STM32_Utility {
     {
         if (this->timer_ != nullptr) {
             if (HAL_TIM_Encoder_Start(this->timer_, TIM_CHANNEL_ALL) != HAL_OK) {
-                std::puts("ERROR\n\r");
+                std::puts("ENCODER ERROR\n\r");
             }
         }
     }
@@ -39,14 +38,14 @@ namespace STM32_Utility {
     {
         if (this->timer_ != nullptr) {
             if (HAL_TIM_Encoder_Stop(this->timer_, TIM_CHANNEL_ALL) != HAL_OK) {
-                std::puts("ERROR\n\r");
+                std::puts("ENCODER ERROR\n\r");
             }
         }
     }
 
     std::uint32_t CNTDevice::get_current_count() const noexcept
     {
-        return static_cast<std::uint32_t>(__HAL_TIM_GetCounter(this->timer_));
+        return static_cast<std::uint32_t>(__HAL_TIM_GET_COUNTER(this->timer_));
     }
 
 }; // namespace STM32_Utility

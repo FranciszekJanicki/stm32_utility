@@ -3,152 +3,111 @@
 
 namespace STM32_Utility {
 
-PWMDevice::PWMDevice(TIMHandle const timer, std::uint16_t const channel_mask,
-                     std::uint16_t const counter_period,
-                     std::float32_t const ref_voltage) noexcept
-    : PWMDevice{timer, channel_mask, 0U, counter_period, ref_voltage} {
-  this->initialize();
-}
+    void frequency_to_prescaler_counter_period(std::uint32_t const clock_hz,
+                                               std::uint32_t const clock_div,
+                                               std::uint32_t const frequency,
+                                               std::uint32_t& prescaler,
+                                               std::uint32_t& period) noexcept
+    {
+        if (frequency > 0UL) {
+            period = clock_hz / frequency;
+            prescaler = 0UL;
 
-PWMDevice::PWMDevice(TIMHandle const timer, std::uint16_t const channel_mask,
-                     std::uint16_t const min_raw, std::uint16_t const max_raw,
-                     std::float32_t const ref_voltage) noexcept
-    : timer_{timer}, channel_mask_{channel_mask}, min_raw_{min_raw},
-      max_raw_{max_raw}, ref_voltage_{ref_voltage} {
-  this->initialize();
-}
-
-PWMDevice::~PWMDevice() noexcept { this->deinitialize(); }
-
-void PWMDevice::set_compare_raw(std::uint16_t const raw) const noexcept {
-
-  std::printf("DUTY: %d\n\r",
-              100.0F * static_cast<float>(raw) /
-                  static_cast<float>(this->get_counter_period()));
-
-  __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
-  this->start();
-}
-
-void PWMDevice::set_compare_voltage(
-    std::float32_t const voltage) const noexcept {
-  this->set_compare_raw(this->voltage_to_raw(voltage));
-}
-
-void PWMDevice::set_compare_raw_it(std::uint16_t const raw) const noexcept {
-
-  std::printf("DUTY: %d\n\r",
-              100.0F * static_cast<float>(raw) /
-                  static_cast<float>(this->get_counter_period()));
-
-  __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
-  this->start_it();
-}
-
-void PWMDevice::set_compare_voltage_it(
-    std::float32_t const voltage) const noexcept {
-  this->set_compare_raw_it(this->voltage_to_raw(voltage));
-}
-
-void PWMDevice::set_compare_raw_dma(std::uint16_t const raw) const noexcept {
-
-  std::printf("DUTY: %d\n\r",
-              100.0F * static_cast<float>(raw) /
-                  static_cast<float>(this->get_counter_period()));
-
-  this->dma_buf_ = raw;
-  this->start_dma();
-}
-
-void PWMDevice::set_compare_voltage_dma(
-    std::float32_t const voltage) const noexcept {
-  this->set_compare_raw_dma(this->voltage_to_raw(voltage));
-}
-
-void PWMDevice::set_frequency(std::uint16_t const frequency) noexcept {
-  if (frequency > 0UL) {
-    auto const clock_hz = 84000000U;
-    auto const clock_div = __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
-    auto counter_period = clock_hz / frequency;
-    auto prescaler = 0U;
-
-    while (counter_period > 0xFFFF && prescaler < 0xFFFF) {
-      ++prescaler;
-      counter_period =
-          (clock_hz / ((prescaler + 1U) * (clock_div + 1U) * frequency)) - 1UL;
+            while (period > 0xFFFF && prescaler < 0xFFFF) {
+                prescaler = prescaler + 1UL;
+                period = clock_hz / ((prescaler + 1UL) * (clock_div + 1UL) * frequency) - 1UL;
+            }
+        }
     }
 
-    std::printf("FREQ: %u, PSC: %u, CP: %u\n\r", frequency, prescaler,
-                counter_period);
+    PWMDevice::PWMDevice(TIMHandle const timer, std::uint32_t const channel_mask) noexcept :
+        timer_{timer}, channel_mask_{channel_mask}
+    {
+        this->initialize();
+    }
 
-    __HAL_TIM_SET_PRESCALER(this->timer_, std::clamp(prescaler, 0U, 0xFFFFU));
-    __HAL_TIM_SET_AUTORELOAD(this->timer_,
-                             std::clamp(counter_period, 0U, 0xFFFFU));
-  }
-}
+    PWMDevice::~PWMDevice() noexcept
+    {
+        this->deinitialize();
+    }
 
-std::uint16_t PWMDevice::get_counter() const noexcept {
-  return __HAL_TIM_GET_COUNTER(this->timer_);
-}
+    std::uint32_t PWMDevice::get_period() const noexcept
+    {
+        return __HAL_TIM_GET_AUTORELOAD(this->timer_);
+    }
 
-std::uint16_t PWMDevice::get_counter_period() const noexcept {
-  return __HAL_TIM_GET_AUTORELOAD(this->timer_);
-}
+    void PWMDevice::set_compare_raw(std::uint32_t const raw) const noexcept
+    {
+        auto const duty = 100.0F * static_cast<std::float32_t>(raw) / static_cast<std::float32_t>(this->get_period());
+        std::printf("DUTY: %.2f\n\r", duty);
 
-std::uint16_t PWMDevice::get_prescaler() const noexcept {
-  return this->timer_->Init.Prescaler;
-}
+        __HAL_TIM_SET_COMPARE(this->timer_, this->channel_mask_, raw);
+    }
 
-std::uint16_t PWMDevice::get_clock_divider() const noexcept {
-  return __HAL_TIM_GET_CLOCKDIVISION(this->timer_);
-}
+    void PWMDevice::set_compare_voltage(std::float32_t const voltage) const noexcept
+    {
+        this->set_compare_raw(this->voltage_to_raw(voltage));
+    }
 
-void PWMDevice::start() const noexcept {
+    void PWMDevice::set_frequency(std::uint32_t const frequency) noexcept
+    {
+        auto period = 0UL;
+        auto prescaler = 0UL;
 
-  HAL_TIM_PWM_Start(this->timer_, this->channel_mask_);
-}
+        frequency_to_prescaler_counter_period(84000000UL, 0UL, frequency, prescaler, period);
+        std::printf("FREQ: %u, PSC: %u, CP: %u\n\r", frequency, prescaler, period);
 
-void PWMDevice::stop() const noexcept {
+        this->set_prescaler(prescaler);
+        this->set_period(period);
+    }
 
-  HAL_TIM_PWM_Stop(this->timer_, this->channel_mask_);
-}
+    void PWMDevice::set_prescaler(std::uint32_t const prescaler) noexcept
+    {
+        __HAL_TIM_SET_PRESCALER(this->timer_, prescaler);
+    }
 
-void PWMDevice::start_it() const noexcept {
+    void PWMDevice::set_period(std::uint32_t const period) noexcept
+    {
+        __HAL_TIM_SET_AUTORELOAD(this->timer_, period);
+    }
 
-  HAL_TIM_PWM_Start_IT(this->timer_, this->channel_mask_);
-}
+    void PWMDevice::set_compare_min() const noexcept
+    {
+        this->set_compare_raw(0U);
+    }
 
-void PWMDevice::stop_it() const noexcept {
+    void PWMDevice::set_compare_max() const noexcept
+    {
+        this->set_compare_raw(this->get_period());
+    }
 
-  HAL_TIM_PWM_Stop_IT(this->timer_, this->channel_mask_);
-}
+    void PWMDevice::set_compare_half() const noexcept
+    {
+        auto compare = static_cast<std::float32_t>(this->get_period()) / 2.0F;
+        this->set_compare_raw(static_cast<std::int16_t>(compare));
+    }
 
-void PWMDevice::start_dma() const noexcept {
+    void PWMDevice::initialize() noexcept
+    {
+        if (this->timer_ != nullptr) {
+            if (HAL_TIM_PWM_Start(this->timer_, this->channel_mask_) != HAL_OK) {
+                std::puts("PWM ERROR\n\r");
+            }
+        }
+    }
 
-  HAL_TIM_PWM_Start_DMA(this->timer_, this->channel_mask_, &this->dma_buf_,
-                        sizeof(this->dma_buf_));
-}
+    void PWMDevice::deinitialize() noexcept
+    {
+        if (this->timer_ != nullptr) {
+            if (HAL_TIM_PWM_Stop(this->timer_, this->channel_mask_) != HAL_OK) {
+                std::puts("PWM ERROR\n\r");
+            }
+        }
+    }
 
-void PWMDevice::stop_dma() const noexcept {
-
-  HAL_TIM_PWM_Stop_DMA(this->timer_, this->channel_mask_);
-}
-
-void PWMDevice::initialize() noexcept {
-  if (this->timer_ != nullptr) {
-  }
-}
-
-void PWMDevice::deinitialize() noexcept {
-  if (this->timer_ != nullptr) {
-  }
-}
-
-std::uint16_t
-PWMDevice::voltage_to_raw(std::float32_t const voltage) const noexcept {
-  return std::clamp(voltage, 0.0F32, this->ref_voltage_) *
-             (this->max_raw_ - this->min_raw_) / this->ref_voltage_ +
-         this->min_raw_;
-}
+    std::uint32_t PWMDevice::voltage_to_raw(std::float32_t const voltage) const noexcept
+    {
+        return std::clamp(voltage, 0.0F32, 3.3F32) * static_cast<std::float32_t>(this->get_period()) / 3.3F32;
+    }
 
 }; // namespace STM32_Utility
