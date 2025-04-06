@@ -9,7 +9,9 @@ namespace STM32_Utility {
     struct OWDevice {
     public:
         OWDevice() noexcept = default;
-        OWDevice(TIMHandle const timer, GPIO const dev_pin, std::uint64_t const dev_address) noexcept;
+        OWDevice(TIMHandle const timer,
+                 GPIO const dev_pin,
+                 std::uint64_t const dev_address) noexcept;
 
         OWDevice(OWDevice const& other) = delete;
         OWDevice(OWDevice&& other) noexcept = default;
@@ -20,26 +22,50 @@ namespace STM32_Utility {
         ~OWDevice() noexcept;
 
         template <std::size_t SIZE>
-        void transmit_bytes(std::array<std::uint8_t, SIZE> const& data) const noexcept;
-        void transmit_bytes(std::uint8_t* const data, std::size_t const size) const noexcept;
-        void transmit_byte(std::uint8_t const data) const noexcept;
+        void transmit_bytes(this OWDevice const& self,
+                            std::array<std::uint8_t, SIZE> const& data) noexcept;
+
+        void transmit_bytes(this OWDevice const& self,
+                            std::uint8_t* const data,
+                            std::size_t const size) noexcept;
+
+        void transmit_byte(this OWDevice const& self, std::uint8_t const data) noexcept;
 
         template <std::size_t SIZE>
-        std::array<std::uint8_t, SIZE> receive_bytes() const noexcept;
-        void receive_bytes(std::uint8_t* const data, std::size_t const size) const noexcept;
-        std::uint8_t receive_byte() const noexcept;
+        std::array<std::uint8_t, SIZE> receive_bytes(this OWDevice const& self) noexcept;
+
+        void receive_bytes(this OWDevice const& self,
+                           std::uint8_t* const data,
+                           std::size_t const size) noexcept;
+
+        std::uint8_t receive_byte(this OWDevice const& self) noexcept;
 
         template <std::size_t SIZE>
-        std::array<std::uint8_t, SIZE> read_bytes(std::uint8_t const address) const noexcept;
-        void read_bytes(std::uint8_t const address, std::uint8_t* const data, std::size_t const size) const noexcept;
-        std::uint8_t read_byte(std::uint8_t const address) const noexcept;
+        std::array<std::uint8_t, SIZE> read_bytes(this OWDevice const& self,
+                                                  std::uint8_t const address) noexcept;
+
+        void read_bytes(this OWDevice const& self,
+                        std::uint8_t const address,
+                        std::uint8_t* const data,
+                        std::size_t const size) noexcept;
+
+        std::uint8_t read_byte(this OWDevice const& self, std::uint8_t const address) noexcept;
 
         template <std::size_t SIZE>
-        void write_bytes(std::uint8_t const address, std::array<std::uint8_t, SIZE> const& data) const noexcept;
-        void write_bytes(std::uint8_t const address, std::uint8_t* const data, std::size_t const size) const noexcept;
-        void write_byte(std::uint8_t const address, std::uint8_t const data) const noexcept;
+        void write_bytes(this OWDevice const& self,
+                         std::uint8_t const address,
+                         std::array<std::uint8_t, SIZE> const& data) noexcept;
 
-        std::uint64_t dev_address() const noexcept;
+        void write_bytes(this OWDevice const& self,
+                         std::uint8_t const address,
+                         std::uint8_t* const data,
+                         std::size_t const size) noexcept;
+
+        void write_byte(this OWDevice const& self,
+                        std::uint8_t const address,
+                        std::uint8_t const data) noexcept;
+
+        std::uint64_t dev_address(this OWDevice const& self) noexcept;
 
     private:
         static std::uint64_t get_counter_microseconds(TIMHandle const timer) noexcept;
@@ -51,8 +77,8 @@ namespace STM32_Utility {
         static constexpr std::uint32_t DELAY_80_US{80U};
         static constexpr std::uint32_t DELAY_320_US{320U};
 
-        void initialize() noexcept;
-        void deinitialize() noexcept;
+        void initialize(this OWDevice const& self) noexcept;
+        void deinitialize(this OWDevice const& self) noexcept;
 
         TIMHandle timer_{nullptr};
 
@@ -61,11 +87,12 @@ namespace STM32_Utility {
     };
 
     template <std::size_t SIZE>
-    void OWDevice::transmit_bytes(std::array<std::uint8_t, SIZE> const& data) const noexcept
+    void OWDevice::transmit_bytes(this OWDevice const& self,
+                                  std::array<std::uint8_t, SIZE> const& data) noexcept
     {}
 
     template <std::size_t SIZE>
-    std::array<std::uint8_t, SIZE> OWDevice::receive_bytes() const noexcept
+    std::array<std::uint8_t, SIZE> OWDevice::receive_bytes(this OWDevice const& self) noexcept
     {
         auto data = std::array<std::uint8_t, SIZE>{};
 
@@ -73,7 +100,8 @@ namespace STM32_Utility {
     }
 
     template <std::size_t SIZE>
-    std::array<std::uint8_t, SIZE> OWDevice::read_bytes(std::uint8_t const address) const noexcept
+    std::array<std::uint8_t, SIZE> OWDevice::read_bytes(this OWDevice const& self,
+                                                        std::uint8_t const address) noexcept
     {
         auto data = std::array<std::uint8_t, SIZE>{};
 
@@ -81,7 +109,9 @@ namespace STM32_Utility {
     }
 
     template <std::size_t SIZE>
-    void OWDevice::write_bytes(std::uint8_t const address, std::array<std::uint8_t, SIZE> const& data) const noexcept
+    void OWDevice::write_bytes(this OWDevice const& self,
+                               std::uint8_t const address,
+                               std::array<std::uint8_t, SIZE> const& data) noexcept
     {}
 
 }; // namespace STM32_Utility

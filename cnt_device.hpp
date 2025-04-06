@@ -18,14 +18,14 @@ namespace STM32_Utility {
 
         ~CNTDevice() noexcept;
 
-        std::uint32_t get_count() const noexcept;
-        std::uint32_t get_count_difference() const noexcept;
+        std::uint32_t get_count(this CNTDevice const& self) noexcept;
+        std::uint32_t get_count_difference(this CNTDevice const& self) noexcept;
 
     private:
-        std::uint32_t get_current_count() const noexcept;
+        std::uint32_t get_current_count(this CNTDevice const& self) noexcept;
 
-        void initialize() noexcept;
-        void deinitialize() noexcept;
+        void initialize(this CNTDevice const& self) noexcept;
+        void deinitialize(this CNTDevice const& self) noexcept;
 
         TIMHandle timer_{nullptr};
         std::uint32_t mutable count_{};

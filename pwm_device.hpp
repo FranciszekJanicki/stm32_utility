@@ -18,24 +18,25 @@ namespace STM32_Utility {
 
         ~PWMDevice() noexcept;
 
-        std::uint32_t get_period() const noexcept;
+        std::uint32_t get_period(this PWMDevice const& self) noexcept;
 
-        void set_frequency(std::uint32_t const frequency) noexcept;
-        void set_prescaler(std::uint32_t const prescaler) noexcept;
-        void set_period(std::uint32_t const period) noexcept;
+        void set_frequency(this PWMDevice const& self, std::uint32_t const frequency) noexcept;
+        void set_prescaler(this PWMDevice const& self, std::uint32_t const prescaler) noexcept;
+        void set_period(this PWMDevice const& self, std::uint32_t const period) noexcept;
 
-        void set_compare_min() const noexcept;
-        void set_compare_max() const noexcept;
-        void set_compare_half() const noexcept;
+        void set_compare_min(this PWMDevice const& self) noexcept;
+        void set_compare_max(this PWMDevice const& self) noexcept;
+        void set_compare_half(this PWMDevice const& self) noexcept;
 
-        void set_compare_raw(std::uint32_t const raw) const noexcept;
-        void set_compare_voltage(std::float32_t const voltage) const noexcept;
+        void set_compare_raw(this PWMDevice const& self, std::uint32_t const raw) noexcept;
+        void set_compare_voltage(this PWMDevice const& self, std::float32_t const voltage) noexcept;
 
     private:
-        std::uint32_t voltage_to_raw(std::float32_t const voltage) const noexcept;
+        std::uint32_t voltage_to_raw(this PWMDevice const& self,
+                                     std::float32_t const voltage) noexcept;
 
-        void initialize() noexcept;
-        void deinitialize() noexcept;
+        void initialize(this PWMDevice const& self) noexcept;
+        void deinitialize(this PWMDevice const& self) noexcept;
 
         TIMHandle timer_{nullptr};
         std::uint32_t channel_mask_{};
