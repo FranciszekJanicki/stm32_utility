@@ -27,7 +27,7 @@ namespace STM32_Utility {
 
     void CNTDevice::initialize(this CNTDevice const& self) noexcept
     {
-        if (self.timer_ != nullptr) {
+        if (self.timer_) {
             if (HAL_TIM_Encoder_Start(self.timer_, TIM_CHANNEL_ALL) != HAL_OK) {
                 std::puts("ENCODER ERROR\n\r");
             }
@@ -36,7 +36,7 @@ namespace STM32_Utility {
 
     void CNTDevice::deinitialize(this CNTDevice const& self) noexcept
     {
-        if (self.timer_ != nullptr) {
+        if (self.timer_) {
             if (HAL_TIM_Encoder_Stop(self.timer_, TIM_CHANNEL_ALL) != HAL_OK) {
                 std::puts("ENCODER ERROR\n\r");
             }

@@ -20,27 +20,21 @@ namespace STM32_Utility {
         ~SPIDevice() noexcept;
 
         template <std::size_t SIZE>
-        void transmit_bytes(this SPIDevice const& self,
-                            std::array<std::uint8_t, SIZE> const& data) noexcept;
+        void transmit_bytes(this SPIDevice const& self, std::array<std::uint8_t, SIZE> const& data) noexcept;
 
-        void transmit_bytes(this SPIDevice const& self,
-                            std::uint8_t* const data,
-                            std::size_t const size) noexcept;
+        void transmit_bytes(this SPIDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept;
 
         void transmit_byte(this SPIDevice const& self, std::uint8_t const data) noexcept;
 
         template <std::size_t SIZE>
         std::array<std::uint8_t, SIZE> receive_bytes(this SPIDevice const& self) noexcept;
 
-        void receive_bytes(this SPIDevice const& self,
-                           std::uint8_t* const data,
-                           std::size_t const size) noexcept;
+        void receive_bytes(this SPIDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept;
 
         std::uint8_t receive_byte(this SPIDevice const& self) noexcept;
 
         template <std::size_t SIZE>
-        std::array<std::uint8_t, SIZE> read_bytes(this SPIDevice const& self,
-                                                  std::uint8_t const address) noexcept;
+        std::array<std::uint8_t, SIZE> read_bytes(this SPIDevice const& self, std::uint8_t const address) noexcept;
 
         void read_bytes(this SPIDevice const& self,
                         std::uint8_t const address,
@@ -59,9 +53,7 @@ namespace STM32_Utility {
                          std::uint8_t* const data,
                          std::size_t const size) noexcept;
 
-        void write_byte(this SPIDevice const& self,
-                        std::uint8_t const address,
-                        std::uint8_t const data) noexcept;
+        void write_byte(this SPIDevice const& self, std::uint8_t const address, std::uint8_t const data) noexcept;
 
     private:
         static std::uint8_t address_to_read_command(std::uint8_t const address) noexcept;
@@ -78,8 +70,7 @@ namespace STM32_Utility {
     };
 
     template <std::size_t SIZE>
-    void SPIDevice::transmit_bytes(this SPIDevice const& self,
-                                   std::array<std::uint8_t, SIZE> const& data) noexcept
+    void SPIDevice::transmit_bytes(this SPIDevice const& self, std::array<std::uint8_t, SIZE> const& data) noexcept
     {
         gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
         HAL_SPI_Transmit(self.spi_bus_, data.data(), data.size(), TIMEOUT);
@@ -126,6 +117,7 @@ namespace STM32_Utility {
         HAL_SPI_Transmit(self.spi_bus_, address_data.data(), address_data.size(), TIMEOUT);
         gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
     }
+
 }; // namespace STM32_Utility
 
 #endif // SPI_DEVICE_HPP

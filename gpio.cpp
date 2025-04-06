@@ -1,4 +1,5 @@
 #include "gpio.hpp"
+#include <cassert>
 
 namespace STM32_Utility {
 
@@ -10,25 +11,29 @@ namespace STM32_Utility {
         {
             auto const index = std::to_underlying(pin) / 16U;
 
-            return (index < GPIO_PORTS.size() && pin != GPIO::NC) ? GPIO_PORTS[index] : nullptr;
+            return index < GPIO_PORTS.size() ? GPIO_PORTS[index] : nullptr;
         }
-    } // namespace
 
-    std::uint16_t pin_to_mask(GPIO const pin) noexcept
-    {
-        return 1U << (std::to_underlying(pin) % 16U);
-    }
+        std::uint16_t pin_to_mask(GPIO const pin) noexcept
+        {
+            return 1U << (std::to_underlying(pin) % 16U);
+        }
+
+    }; // namespace
 
     GPIO_PinState gpio_read_pin(GPIO const pin) noexcept
     {
+        assert(pin != GPIO::NC);
+
         if (pin != GPIO::NC) {
             return HAL_GPIO_ReadPin(pin_to_port(pin), pin_to_mask(pin));
         }
-        std::unreachable();
     }
 
     void gpio_write_pin(GPIO const pin, GPIO_PinState const gpio_state) noexcept
     {
+        assert(pin != GPIO::NC);
+
         if (pin != GPIO::NC) {
             HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), gpio_state);
         }
@@ -36,6 +41,8 @@ namespace STM32_Utility {
 
     void gpio_toggle_pin(GPIO const pin) noexcept
     {
+        assert(pin != GPIO::NC);
+
         if (pin != GPIO::NC) {
             HAL_GPIO_TogglePin(pin_to_port(pin), pin_to_mask(pin));
         }
@@ -43,6 +50,8 @@ namespace STM32_Utility {
 
     void gpio_set_pin(GPIO const pin) noexcept
     {
+        assert(pin != GPIO::NC);
+
         if (pin != GPIO::NC) {
             HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), GPIO_PIN_SET);
         }
@@ -50,9 +59,10 @@ namespace STM32_Utility {
 
     void gpio_reset_pin(GPIO const pin) noexcept
     {
+        assert(pin != GPIO::NC);
+
         if (pin != GPIO::NC) {
             HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), GPIO_PIN_RESET);
         }
     }
-
 }; // namespace STM32_Utility

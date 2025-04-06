@@ -1,4 +1,5 @@
 #include "spi_device.hpp"
+#include <cassert>
 
 namespace STM32_Utility {
 
@@ -13,10 +14,11 @@ namespace STM32_Utility {
         this->deinitialize();
     }
 
-    void SPIDevice::transmit_bytes(this SPIDevice const& self,
-                                   std::uint8_t* const data,
-                                   std::size_t const size) noexcept
+    void
+    SPIDevice::transmit_bytes(this SPIDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept
     {
+        assert(data);
+
         HAL_SPI_Transmit(self.spi_bus_, data, size, TIMEOUT);
     }
 
@@ -25,10 +27,10 @@ namespace STM32_Utility {
         self.transmit_bytes(std::array<std::uint8_t, 1UL>{data});
     }
 
-    void SPIDevice::receive_bytes(this SPIDevice const& self,
-                                  std::uint8_t* const data,
-                                  std::size_t const size) noexcept
+    void SPIDevice::receive_bytes(this SPIDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept
     {
+        assert(data);
+
         HAL_SPI_Receive(self.spi_bus_, data, size, TIMEOUT);
     }
 
@@ -42,12 +44,13 @@ namespace STM32_Utility {
                                std::uint8_t* const data,
                                std::size_t const size) noexcept
     {
+        assert(data);
+
         auto const command = address_to_read_command(address);
         HAL_SPI_TransmitReceive(self.spi_bus_, &command, data, size, TIMEOUT);
     }
 
-    std::uint8_t SPIDevice::read_byte(this SPIDevice const& self,
-                                      std::uint8_t const address) noexcept
+    std::uint8_t SPIDevice::read_byte(this SPIDevice const& self, std::uint8_t const address) noexcept
     {
         return self.read_bytes<1UL>(address)[0];
     }
@@ -57,6 +60,8 @@ namespace STM32_Utility {
                                 std::uint8_t* const data,
                                 std::size_t const size) noexcept
     {
+        assert(data);
+
         if (auto address_data = static_cast<std::uint8_t*>(std::malloc(size + 1UL))) {
             auto const command = address_to_write_command(address);
             std::memcpy(address_data, &command, 1UL);
@@ -68,9 +73,7 @@ namespace STM32_Utility {
         }
     }
 
-    void SPIDevice::write_byte(this SPIDevice const& self,
-                               std::uint8_t const address,
-                               std::uint8_t const data) noexcept
+    void SPIDevice::write_byte(this SPIDevice const& self, std::uint8_t const address, std::uint8_t const data) noexcept
     {
         self.write_bytes(address, std::array<std::uint8_t, 1UL>{data});
     }
@@ -87,14 +90,14 @@ namespace STM32_Utility {
 
     void SPIDevice::initialize(this SPIDevice const& self) noexcept
     {
-        if (self.spi_bus_ != nullptr) {
+        if (self.spi_bus_) {
             gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
         }
     }
 
     void SPIDevice::deinitialize(this SPIDevice const& self) noexcept
     {
-        if (self.spi_bus_ != nullptr) {
+        if (self.spi_bus_) {
             gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
         }
     }
