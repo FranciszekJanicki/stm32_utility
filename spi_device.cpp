@@ -3,23 +3,12 @@
 
 namespace STM32_Utility {
 
-    SPIDevice::SPIDevice(SPIHandle const spi_bus, GPIO const chip_select) noexcept :
-        chip_select_{chip_select}, spi_bus_{spi_bus}
-    {
-        this->initialize();
-    }
-
-    SPIDevice::~SPIDevice() noexcept
-    {
-        this->deinitialize();
-    }
-
     void
     SPIDevice::transmit_bytes(this SPIDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept
     {
         assert(data);
 
-        HAL_SPI_Transmit(self.spi_bus_, data, size, TIMEOUT);
+        HAL_SPI_Transmit(self.spi_bus, data, size, TIMEOUT);
     }
 
     void SPIDevice::transmit_byte(this SPIDevice const& self, std::uint8_t const data) noexcept
@@ -31,7 +20,7 @@ namespace STM32_Utility {
     {
         assert(data);
 
-        HAL_SPI_Receive(self.spi_bus_, data, size, TIMEOUT);
+        HAL_SPI_Receive(self.spi_bus, data, size, TIMEOUT);
     }
 
     std::uint8_t SPIDevice::receive_byte(this SPIDevice const& self) noexcept
@@ -47,7 +36,7 @@ namespace STM32_Utility {
         assert(data);
 
         auto const command = address_to_read_command(address);
-        HAL_SPI_TransmitReceive(self.spi_bus_, &command, data, size, TIMEOUT);
+        HAL_SPI_TransmitReceive(self.spi_bus, &command, data, size, TIMEOUT);
     }
 
     std::uint8_t SPIDevice::read_byte(this SPIDevice const& self, std::uint8_t const address) noexcept
@@ -67,7 +56,7 @@ namespace STM32_Utility {
             std::memcpy(address_data, &command, 1UL);
             std::memcpy(address_data + 1UL, data, size);
 
-            HAL_SPI_Transmit(self.spi_bus_, address_data, size + 1UL, TIMEOUT);
+            HAL_SPI_Transmit(self.spi_bus, address_data, size + 1UL, TIMEOUT);
 
             std::free(address_data);
         }
@@ -90,16 +79,12 @@ namespace STM32_Utility {
 
     void SPIDevice::initialize(this SPIDevice const& self) noexcept
     {
-        if (self.spi_bus_) {
-            gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
-        }
+        gpio_write_pin(self.chip_select, GPIO_PIN_SET);
     }
 
     void SPIDevice::deinitialize(this SPIDevice const& self) noexcept
     {
-        if (self.spi_bus_) {
-            gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
-        }
+        gpio_write_pin(self.chip_select, GPIO_PIN_RESET);
     }
 
 }; // namespace STM32_Utility

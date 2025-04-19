@@ -23,17 +23,15 @@ namespace STM32_Utility {
 
     GPIO_PinState gpio_read_pin(GPIO const pin) noexcept
     {
-        assert(pin != GPIO::NC);
-
         if (pin != GPIO::NC) {
             return HAL_GPIO_ReadPin(pin_to_port(pin), pin_to_mask(pin));
+        } else {
+            return GPIO_PIN_RESET;
         }
     }
 
     void gpio_write_pin(GPIO const pin, GPIO_PinState const gpio_state) noexcept
     {
-        assert(pin != GPIO::NC);
-
         if (pin != GPIO::NC) {
             HAL_GPIO_WritePin(pin_to_port(pin), pin_to_mask(pin), gpio_state);
         }

@@ -20,20 +20,9 @@ namespace STM32_Utility {
         }
     }
 
-    PWMDevice::PWMDevice(TIMHandle const timer, std::uint32_t const channel_mask) noexcept :
-        timer_{timer}, channel_mask_{channel_mask}
-    {
-        this->initialize();
-    }
-
-    PWMDevice::~PWMDevice() noexcept
-    {
-        this->deinitialize();
-    }
-
     std::uint32_t PWMDevice::get_period(this PWMDevice const& self) noexcept
     {
-        return __HAL_TIM_GET_AUTORELOAD(self.timer_);
+        return __HAL_TIM_GET_AUTORELOAD(self.timer);
     }
 
     void PWMDevice::set_compare_raw(this PWMDevice const& self, std::uint32_t const raw) noexcept
@@ -45,7 +34,7 @@ namespace STM32_Utility {
         std::printf("DUTY: %.2f\n\r",
                     100 * static_cast<std::float32_t>(clamped_raw) / static_cast<std::float32_t>(max_raw));
 
-        __HAL_TIM_SET_COMPARE(self.timer_, self.channel_mask_, clamped_raw);
+        __HAL_TIM_SET_COMPARE(self.timer, self.channel_mask, clamped_raw);
     }
 
     void PWMDevice::set_compare_voltage(this PWMDevice const& self, std::float32_t const voltage) noexcept
@@ -67,12 +56,12 @@ namespace STM32_Utility {
 
     void PWMDevice::set_prescaler(this PWMDevice const& self, std::uint32_t const prescaler) noexcept
     {
-        __HAL_TIM_SET_PRESCALER(self.timer_, prescaler);
+        __HAL_TIM_SET_PRESCALER(self.timer, prescaler);
     }
 
     void PWMDevice::set_period(this PWMDevice const& self, std::uint32_t const period) noexcept
     {
-        __HAL_TIM_SET_AUTORELOAD(self.timer_, period);
+        __HAL_TIM_SET_AUTORELOAD(self.timer, period);
     }
 
     void PWMDevice::set_compare_min(this PWMDevice const& self) noexcept
@@ -93,19 +82,15 @@ namespace STM32_Utility {
 
     void PWMDevice::initialize(this PWMDevice const& self) noexcept
     {
-        if (self.timer_) {
-            if (HAL_TIM_PWM_Start(self.timer_, self.channel_mask_) != HAL_OK) {
-                std::puts("PWM ERROR\n\r");
-            }
+        if (HAL_TIM_PWM_Start(self.timer, self.channel_mask) != HAL_OK) {
+            std::puts("PWM ERROR\n\r");
         }
     }
 
     void PWMDevice::deinitialize(this PWMDevice const& self) noexcept
     {
-        if (self.timer_) {
-            if (HAL_TIM_PWM_Stop(self.timer_, self.channel_mask_) != HAL_OK) {
-                std::puts("PWM ERROR\n\r");
-            }
+        if (HAL_TIM_PWM_Stop(self.timer, self.channel_mask) != HAL_OK) {
+            std::puts("PWM ERROR\n\r");
         }
     }
 

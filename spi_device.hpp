@@ -8,17 +8,6 @@ namespace STM32_Utility {
 
     struct SPIDevice {
     public:
-        SPIDevice() noexcept = default;
-        SPIDevice(SPIHandle const spi_bus, GPIO const chip_select) noexcept;
-
-        SPIDevice(SPIDevice const& other) = delete;
-        SPIDevice(SPIDevice&& other) noexcept = default;
-
-        SPIDevice& operator=(SPIDevice const& other) = delete;
-        SPIDevice& operator=(SPIDevice&& other) noexcept = default;
-
-        ~SPIDevice() noexcept;
-
         template <std::size_t SIZE>
         void transmit_bytes(this SPIDevice const& self, std::array<std::uint8_t, SIZE> const& data) noexcept;
 
@@ -55,26 +44,26 @@ namespace STM32_Utility {
 
         void write_byte(this SPIDevice const& self, std::uint8_t const address, std::uint8_t const data) noexcept;
 
+        void initialize(this SPIDevice const& self) noexcept;
+        void deinitialize(this SPIDevice const& self) noexcept;
+
+        GPIO chip_select = GPIO::NC;
+
+        SPIHandle spi_bus = nullptr;
+
     private:
         static std::uint8_t address_to_read_command(std::uint8_t const address) noexcept;
         static std::uint8_t address_to_write_command(std::uint8_t const address) noexcept;
 
-        static constexpr std::uint32_t TIMEOUT{100U};
-
-        void initialize(this SPIDevice const& self) noexcept;
-        void deinitialize(this SPIDevice const& self) noexcept;
-
-        GPIO chip_select_{};
-
-        SPIHandle spi_bus_{nullptr};
+        static constexpr std::uint32_t TIMEOUT = 100UL;
     };
 
     template <std::size_t SIZE>
     void SPIDevice::transmit_bytes(this SPIDevice const& self, std::array<std::uint8_t, SIZE> const& data) noexcept
     {
-        gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(self.spi_bus_, data.data(), data.size(), TIMEOUT);
-        gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
+        gpio_write_pin(self.chip_select, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(self.spi_bus, data.data(), data.size(), TIMEOUT);
+        gpio_write_pin(self.chip_select, GPIO_PIN_SET);
     }
 
     template <std::size_t SIZE>
@@ -82,9 +71,9 @@ namespace STM32_Utility {
     {
         auto data = std::array<std::uint8_t, SIZE>{};
 
-        gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
-        HAL_SPI_Receive(self.spi_bus_, data.data(), data.size(), TIMEOUT);
-        gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
+        gpio_write_pin(self.chip_select, GPIO_PIN_RESET);
+        HAL_SPI_Receive(self.spi_bus, data.data(), data.size(), TIMEOUT);
+        gpio_write_pin(self.chip_select, GPIO_PIN_SET);
 
         return data;
     }
@@ -96,9 +85,9 @@ namespace STM32_Utility {
         auto data = std::array<std::uint8_t, SIZE>{};
         auto command = address_to_read_command(address);
 
-        gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
-        HAL_SPI_TransmitReceive(self.spi_bus_, &command, data.data(), data.size(), TIMEOUT);
-        gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
+        gpio_write_pin(self.chip_select, GPIO_PIN_RESET);
+        HAL_SPI_TransmitReceive(self.spi_bus, &command, data.data(), data.size(), TIMEOUT);
+        gpio_write_pin(self.chip_select, GPIO_PIN_SET);
 
         return data;
     }
@@ -113,9 +102,9 @@ namespace STM32_Utility {
         std::memcpy(address_data.data(), &command, 1UL);
         std::memcpy(address_data.data() + 1UL, data.data(), data.size());
 
-        gpio_write_pin(self.chip_select_, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(self.spi_bus_, address_data.data(), address_data.size(), TIMEOUT);
-        gpio_write_pin(self.chip_select_, GPIO_PIN_SET);
+        gpio_write_pin(self.chip_select, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(self.spi_bus, address_data.data(), address_data.size(), TIMEOUT);
+        gpio_write_pin(self.chip_select, GPIO_PIN_SET);
     }
 
 }; // namespace STM32_Utility

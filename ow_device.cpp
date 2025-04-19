@@ -3,17 +3,6 @@
 
 namespace STM32_Utility {
 
-    OWDevice::OWDevice(TIMHandle const timer, GPIO const dev_pin, std::uint64_t const dev_address) noexcept :
-        timer_{timer}, dev_pin_{dev_pin}, dev_address_{dev_address}
-    {
-        this->initialize();
-    }
-
-    OWDevice::~OWDevice() noexcept
-    {
-        this->deinitialize();
-    }
-
     void OWDevice::transmit_bytes(this OWDevice const& self, std::uint8_t* const data, std::size_t const size) noexcept
     {
         assert(data);
@@ -60,11 +49,6 @@ namespace STM32_Utility {
         self.write_bytes(address, std::array<std::uint8_t, 1UL>{data});
     }
 
-    std::uint64_t OWDevice::dev_address(this OWDevice const& self) noexcept
-    {
-        return self.dev_address_;
-    }
-
     std::uint64_t OWDevice::get_counter_microseconds(TIMHandle const timer) noexcept
     {
         return 1000ULL * get_counter_miliseconds(timer);
@@ -85,15 +69,9 @@ namespace STM32_Utility {
     }
 
     void OWDevice::initialize(this OWDevice const& self) noexcept
-    {
-        if (self.timer_) {
-        }
-    }
+    {}
 
     void OWDevice::deinitialize(this OWDevice const& self) noexcept
-    {
-        if (self.timer_) {
-        }
-    }
+    {}
 
 }; // namespace STM32_Utility
